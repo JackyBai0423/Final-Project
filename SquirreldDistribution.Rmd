@@ -6,9 +6,11 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=T,message=F,warning=F)
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
+source("../../scripts/ggprob.R")
+
 ```
 
 Project Title: Squirrel Distribution
@@ -20,12 +22,20 @@ The dataset collected by the Squirrel Census contains squirrels data for each of
 Introduction: 
 Squirrels at New York City central park are becoming a popular scene among citizens and travelers. Our project will present a solid analysis of squirrel data collected at NYC central park and provide distribution data and graphs of squirrels of different fur colors.
 
+## Read CSV data
+
+```{r read_data, include=FALSE}
+data_org = read_csv("./2018_Central_Park_Squirrel_Census_-_Squirrel_Data.csv")
+
+data = data_org %>% select(X, Y,`Unique Squirrel ID`, Shift,Age,`Primary Fur Color`,Location)
+
+data = data %>% rename(x= X, y = Y, id = `Unique Squirrel ID`, time = Shift, age = Age, fur_color = `Primary Fur Color`, location = Location) 
+```
 
 
-Analysis: 
 
 
-Graph: 
 
 
-Discussion: 
+
+
