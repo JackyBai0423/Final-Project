@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
-source("../../scripts/ggprob.R")
+# source("ggprob.R")
 
 ```
 
@@ -27,11 +27,32 @@ Squirrels at New York City central park are becoming a popular scene among citiz
 ```{r read_data, include=FALSE}
 data_org = read_csv("./2018_Central_Park_Squirrel_Census_-_Squirrel_Data.csv")
 
-data = data_org %>% select(X, Y,`Unique Squirrel ID`, Shift,Age,`Primary Fur Color`,Location)
+data = data_org %>% select(X, Y,Hectare, `Hectare Squirrel Number`, `Unique Squirrel ID`, Shift,Age,`Primary Fur Color`,Location)
 
-data = data %>% rename(x= X, y = Y, id = `Unique Squirrel ID`, time = Shift, age = Age, fur_color = `Primary Fur Color`, location = Location) 
+data = data %>% rename(x= X, y = Y, hectare = Hectare, hectare_num = `Hectare Squirrel Number`, id = `Unique Squirrel ID`, time = Shift, age = Age, fur_color = `Primary Fur Color`, location = Location) %>% 
+  mutate(fur_color=tolower(fur_color)) %>%
+  drop_na()%>%
+  mutate(vertical=ceiling(as.numeric(str_sub(hectare,1,2))/3),horizontal=str_sub(hectare,3,3))
 ```
 
+```{r}
+am_squirrel = data %>%
+  filter(time == "AM") %>%
+  group_by(horizontal, vertical, fur_color) %>%
+  summarise(number = sum(hectare_num))
+pm_squirrel = data %>%
+  filter(time == "PM") %>%
+  group_by(horizontal, vertical, fur_color) %>%
+  summarise(number = sum(hectare_num))
+ggplot(data = am_squirrel, aes(x=horizontal,y=vertical))+
+  geom_point(aes(color=fur_color,size = number))+
+  facet_wrap(~fur_color)
+ggplot(data = pm_squirrel, aes(x=horizontal,y=vertical))+
+  geom_point(aes(color=fur_color))+
+  facet_wrap(~fur_color)
+by_hectare = data %>% group_by(hectare,fur_color)
+
+```
 
 
 
